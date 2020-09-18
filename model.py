@@ -1,10 +1,13 @@
 import keras
+import keras.backend as K
 import datetime
 from keras.applications.vgg16 import VGG16
 from keras.layers import (
     Input, Conv2D, GlobalAveragePooling2D,
     Dense, Embedding, Lambda
 )
+from keras.models import Model
+
 
 
 class FaceModel:
