@@ -14,11 +14,11 @@ class DataGenerator:
 
         self.x, self.x_test, self.y, self.y_test = train_test_split(self.x, self.y, test_size=0.3)
 
-        self.classes = np.unique(self.labels)
+        self.classes = np.unique(self.y)
         self.per_class_ids = {}
         ids = np.array(range(len(self.x)))
         for c in self.classes:
-            self.per_class_ids[c] = ids[self.labels == c]
+            self.per_class_ids[c] = ids[self.y == c]
 
 
     def get_samples_for_class(self, c, samples=None):
