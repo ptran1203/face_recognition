@@ -7,6 +7,7 @@ from keras.layers import (
     Dense, Embedding, Lambda
 )
 from keras.models import Model
+from keras.optimizers import Adam, SGD
 
 
 
@@ -100,7 +101,7 @@ class FaceModel:
 
             batch_loss = self.init_hist()
 
-            for x, y in data_gen.next_batch(augment_factor):
+            for x, y in data_gen.next_batch():
                 loss, acc = self.main_model.train_on_batch(x, y)
                 batch_loss['loss'].append(loss)
 
