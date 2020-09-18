@@ -19,8 +19,7 @@ class FaceModel:
         self.embedding = self.embedding_model()
 
 
-    def feature_extractor(self):
-        image = Input(self.input_shape)
+    def feature_extractor(self, image):
         vgg16 = VGG16(
             include_top=False,
             weights='imagenet',
@@ -32,13 +31,22 @@ class FaceModel:
         out1 = keras.layers.advanced_activations.PReLU(name='side_out')(x)
         out2 = Dense(self.num_of_classes, activation='softmax', name='main_out')(out1)
         return out1, out2
-        
+
+
+    def l2_loss(self, inputs):
+        a, b = inputs
+        return K.sum(
+            K.square(a - b[:, 0]),
+            axis=1,
+            keepdims=True,
+        )
+
 
     def build_main_model(self):
-        side_output, final_output = self.feature_extractor()
+        image = Input(self.input_shape)
+        side_output, final_output = self.feature_extractor(image)
         centers = Embedding(num_of_classes, self.feat_dims)(labels)
-        l2_loss = Lambda(lambda x: K.sum(K.square(x[0]-x[1][:,0]),1,keepdims=True),
-                            name='l2_loss')([side_output ,centers])
+        l2_loss = Lambda(self.l2_loss, name='l2_loss')([side_output, centers])
 
         train_model = Model(inputs=[images, labels],
                             outputs=[final_output, l2_loss])

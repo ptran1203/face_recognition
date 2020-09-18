@@ -3,6 +3,8 @@ import utils
 from collections import Counter
 import os
 from sklearn.model_selection import train_test_split
+from keras.utils import to_categorical
+
 
 class DataGenerator:
     def __init__(self, base_dir, batch_size=64):
@@ -56,16 +58,18 @@ class DataGenerator:
         return np.array(imgs), np.array(labels)
 
 
-    def next_batch(self, augment_factor):
-        x = self.x
+    def next_batch(self):
+        dataset_x = self.x
+        labels = self.y
+        onehot_labels = to_categorical(labels, self.num_of_classes)
 
-        indices = np.arange(x.shape[0])
+        indices = np.arange(dataset_x.shape[0])
         np.random.shuffle(indices)
-        max_id = x.shape[0] - self.batch_size + 1
-        for start_idx in range(0, max_id, self.batch_size):
-            access_pattern = indices[start_idx:start_idx + self.batch_size]
 
+        for start_idx in range(0, dataset_x.shape[0] - self.batch_size + 1, self.batch_size):
+            access_pattern = indices[start_idx:start_idx + self.batch_size]
+            batch_y = [onehot_labels[access_pattern], self.dummy]
             yield (
-                x[access_pattern, :, :, :],
-                self.y[access_pattern],
+                [dataset_x[access_pattern, :, :, :], labels[access_pattern]],
+                batch_y,
             )
