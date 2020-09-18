@@ -110,22 +110,22 @@ class FaceModel:
             batch_loss = self.init_hist()
 
             for x, y in data_gen.next_batch():
-                loss, acc = self.main_model.train_on_batch(x, y)
+                loss, _,_,acc,_ = self.main_model.train_on_batch(x, y)
                 batch_loss['loss'].append(loss)
 
             # evaluation
-            batch_loss['val_loss'] = self.main_model.evaluate(test_gen.x_test,
-                                                              test_gen.y_test,
-                                                              verbose=False)
+            # batch_loss['val_loss'] = self.main_model.evaluate(test_gen.x_test,
+            #                                                   test_gen.y_test,
+            #                                                   verbose=False)
 
             mean_loss = np.mean(np.array(batch_loss['loss']))
-            mean_val_loss = np.mean(np.array(batch_loss['val_loss']))
+            # mean_val_loss = np.mean(np.array(batch_loss['val_loss']))
 
             history['loss'].append(mean_loss)
-            history['val_loss'].append(mean_val_loss)
+            # history['val_loss'].append(mean_val_loss)
 
             print("Loss: {}, Val Loss: {} - {}".format(
-                mean_loss, mean_val_loss,
+                mean_loss, 0,
                 datetime.datetime.now() - start_time
             ))
 
