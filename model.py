@@ -3,7 +3,7 @@ import datetime
 from keras.applications.vgg16 import VGG16
 from keras.layers import (
     Input, Conv2D, GlobalAveragePooling2D,
-    Dense, Embedding
+    Dense, Embedding, Lambda
 )
 
 
@@ -28,6 +28,8 @@ class FaceModel:
         )
 
         x = vgg16(image)
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(self.feat_dims)(x)
         out1 = keras.layers.advanced_activations.PReLU(name='side_out')(x)
         out2 = Dense(self.num_of_classes, activation='softmax', name='main_out')(out1)
         return out1, out2
@@ -43,9 +45,10 @@ class FaceModel:
 
 
     def build_main_model(self):
-        image = Input(self.input_shape)
-        side_output, final_output = self.feature_extractor(image)
-        centers = Embedding(num_of_classes, self.feat_dims)(labels)
+        images = Input(self.input_shape)
+        labels = Input((1,))
+        side_output, final_output = self.feature_extractor(images)
+        centers = Embedding(self.num_of_classes, self.feat_dims)(labels)
         l2_loss = Lambda(self.l2_loss, name='l2_loss')([side_output, centers])
 
         train_model = Model(inputs=[images, labels],
