@@ -42,7 +42,7 @@ class FaceModel:
     def embedding_model(self):
         return Model(
             inputs=self.main_model.inputs[0],
-            outputs= self.main_model..get_layer('side_out').get_output_at(-1),
+            outputs= self.main_model.get_layer('side_out').get_output_at(-1),
             name="embbeding",
         )
 
