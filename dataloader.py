@@ -11,7 +11,6 @@ class DataGenerator:
         self.x, self.y = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
 
         self.x = utils.norm(self.x)
-        self.y = utils.norm(self.y)
 
         self.x, self.x_test, self.y, self.y_test = train_test_split(self.x, self.y, test_size=0.3)
 
