@@ -11,19 +11,21 @@ class DataGenerator:
         self.base_dir = base_dir
         self.batch_size = batch_size
         self.x, self.labels = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
-        
+        self.x, self.x_test, self.labels, self.labels_test = train_test_split(self.x, self.y, test_size=0.3)
+
         all_labels = np.unique(self.labels)
         _, self.y = np.unique(self.labels, return_inverse=True)
+        print(self.labels.shape, self.y.shape)
+        self.dummy = np.zeros((self.batch_size, 129))
 
         self.x = utils.norm(self.x)
-
-        self.x, self.x_test, self.y, self.y_test = train_test_split(self.x, self.y, test_size=0.3)
 
         self.classes = np.unique(self.y)
         self.per_class_ids = {}
         ids = np.array(range(len(self.x)))
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
+
 
 
     def get_samples_for_class(self, c, samples=None):
