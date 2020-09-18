@@ -11,7 +11,7 @@ class DataGenerator:
         self.base_dir = base_dir
         self.batch_size = batch_size
         self.x, self.labels = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
-        self.y = np.arange(len(self.labels))
+        self.y = np.arange(len(np.unique(self.labels)))
 
         self.x = utils.norm(self.x)
 
