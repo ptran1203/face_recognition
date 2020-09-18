@@ -10,7 +10,8 @@ class DataGenerator:
     def __init__(self, base_dir, batch_size=64):
         self.base_dir = base_dir
         self.batch_size = batch_size
-        self.x, self.y = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
+        self.x, self.labels = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
+        self.y = np.arange(len(self.labels))
 
         self.x = utils.norm(self.x)
 
@@ -61,7 +62,7 @@ class DataGenerator:
     def next_batch(self):
         dataset_x = self.x
         labels = self.y
-        onehot_labels = to_categorical(labels, self.num_of_classes)
+        onehot_labels = to_categorical(labels, len(self.classes))
 
         indices = np.arange(dataset_x.shape[0])
         np.random.shuffle(indices)
