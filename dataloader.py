@@ -13,7 +13,7 @@ class DataGenerator:
         self.x, self.labels = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
         
         all_labels = np.unique(self.labels)
-        _, self.y = mp.unique(self.labels, return_inverse=True)
+        _, self.y = np.unique(self.labels, return_inverse=True)
 
         self.x = utils.norm(self.x)
 
