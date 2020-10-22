@@ -109,10 +109,7 @@ def http_get_img(url, rst=64, gray=False, normalize=True):
 
     return img
 
-def make_border(img, color, bordersize=3, normalize=False):
-    if normalize:
-        color = norm(color)
-
+def make_border(img, color, bordersize=3):
     return cv2.copyMakeBorder(
         img,
         top=bordersize,
@@ -130,7 +127,7 @@ def visualize_scatter_with_images(X_2d_data, images, labels, figsize=(10,10), im
 
     for xy, i, cl in zip(X_2d_data, images, labels):
         x0, y0 = xy
-        i = make_border(i, colors[cl], 2, normalize=True)
+        i = make_border(i, colors[cl], 2)
         img = OffsetImage(i, zoom=image_zoom)
         ab = AnnotationBbox(img, (x0, y0), xycoords='data', frameon=False)
         artists.append(ax.add_artist(ab))
