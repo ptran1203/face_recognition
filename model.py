@@ -1,3 +1,4 @@
+import tensorflow as tf
 import tensorflow.keras.backend as K
 import datetime
 from tensorflow.keras.applications.vgg16 import VGG16
@@ -32,6 +33,8 @@ class FaceModel:
         x = vgg16(image)
         x = GlobalAveragePooling2D()(x)
         x = Dense(self.feat_dims)(x)
+        # normalize
+        x = Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
         return x
 
 
