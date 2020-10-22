@@ -5,6 +5,7 @@ import keras.preprocessing.image as image_processing
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import cv2
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 try:
@@ -149,9 +150,6 @@ def visualize_scatter(data_2d, label_ids, figsize=(8,8), legend=True,title="None
 def scatter_plot(x, y, encoder, name='chart', opt='pca', plot_img=None,
                 legend=True, title="None"):
     step = 1
-    if encoder.input_shape[-1] != x.shape[-1]:
-        x = triple_channels(x)
-
     x_embeddings = encoder.predict(x)
     if len(x_embeddings.shape) > 2:
         x_embeddings = x_embeddings.reshape(x_embeddings.shape[0], -1)
