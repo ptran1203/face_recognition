@@ -109,15 +109,30 @@ def http_get_img(url, rst=64, gray=False, normalize=True):
 
     return img
 
+def make_border(img, color, bordersize=3):
+    return cv2.copyMakeBorder(
+        img,
+        top=bordersize,
+        bottom=bordersize,
+        left=bordersize,
+        right=bordersize,
+        borderType=cv2.BORDER_CONSTANT,
+        value=color
+    )
 
-def visualize_scatter_with_images(X_2d_data, images, figsize=(10,10), image_zoom=0.5):
+def visualize_scatter_with_images(X_2d_data, images, labels, figsize=(10,10), image_zoom=0.5):
     fig, ax = plt.subplots(figsize=figsize)
     artists = []
-    for xy, i in zip(X_2d_data, images):
+    colors = cm.rainbow(np.linspace(0, 1, len(np.unique(labels))))
+
+    for xy, i, cl in zip(X_2d_data, images, labels):
         x0, y0 = xy
+        i = make_border(i, colors[cl], 2)
+
         img = OffsetImage(i, zoom=image_zoom)
         ab = AnnotationBbox(img, (x0, y0), xycoords='data', frameon=False)
         artists.append(ax.add_artist(ab))
+
     ax.update_datalim(X_2d_data)
     ax.autoscale()
     plt.show()
@@ -148,12 +163,17 @@ def visualize_scatter(data_2d, label_ids, figsize=(8,8), legend=True,title="None
 
 
 def scatter_plot(x, y, encoder, name='chart', opt='pca', plot_img=None,
-                legend=True, title="None"):
-    step = 1
+                legend=True, title="None", figsize=(10,10), image_zoom=0.5,
+                denormalize=False):
     x_embeddings = encoder.predict(x)
     if len(x_embeddings.shape) > 2:
         x_embeddings = x_embeddings.reshape(x_embeddings.shape[0], -1)
     decomposed_embeddings = DECOMPOSERS[opt].fit_transform(x_embeddings)
+
+    if denormalize:
+            x = de_norm(x)
+
     if plot_img:
-        return visualize_scatter_with_images(decomposed_embeddings,x)
+        return visualize_scatter_with_images(decomposed_embeddings, x, y, figsize, image_zoom)
+
     visualize_scatter(decomposed_embeddings, y, legend=legend,title=title)
