@@ -3,6 +3,7 @@ import numpy as np
 import urllib.request
 import keras.preprocessing.image as image_processing
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import cv2
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
