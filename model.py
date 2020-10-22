@@ -32,15 +32,7 @@ class FaceModel:
         x = vgg16(image)
         x = GlobalAveragePooling2D()(x)
         x = Dense(self.feat_dims)(x)
-        return Activation('relu')(x)
-
-
-    def embedding_model(self):
-        return Model(
-            inputs=self.main_model.inputs[0],
-            outputs= self.main_model.get_layer('side_out').get_output_at(-1),
-            name="embbeding",
-        )
+        return x
 
 
     def l2_loss(self, inputs):
