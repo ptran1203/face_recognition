@@ -1,15 +1,12 @@
-import keras
-import keras.backend as K
+import tensorflow.keras.backend as K
 import datetime
-from keras.applications.vgg16 import VGG16
-from keras.layers import (
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.layers import (
     Input, Conv2D, GlobalAveragePooling2D,
-    Dense, Embedding, Lambda
+    Dense, Embedding, Lambda, Activation
 )
-from keras.models import Model
-from keras.optimizers import Adam, SGD
-
-
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam, SGD
 
 class FaceModel:
     def __init__(self, rst, num_of_classes, lr=1e-3, feat_dims=128):
@@ -34,9 +31,7 @@ class FaceModel:
         x = vgg16(image)
         x = GlobalAveragePooling2D()(x)
         x = Dense(self.feat_dims)(x)
-        out1 = keras.layers.advanced_activations.PReLU(name='side_out')(x)
-        out2 = Dense(self.num_of_classes, activation='softmax', name='main_out')(out1)
-        return out1, out2
+        return Activation('relu')(x)
 
 
     def embedding_model(self):
@@ -59,12 +54,10 @@ class FaceModel:
     def build_main_model(self):
         images = Input(self.input_shape)
         labels = Input((1,))
-        side_output, final_output = self.feature_extractor(images)
-        centers = Embedding(self.num_of_classes, self.feat_dims)(labels)
-        l2_loss = Lambda(self.l2_loss, name='l2_loss')([side_output, centers])
+        embedding = self.feature_extractor(images)
 
         train_model = Model(inputs=[images, labels],
-                            outputs=[final_output, l2_loss])
+                            outputs=[embedding])
         train_model.compile(optimizer=Adam(self.lr),
                             loss=[
                                   "categorical_crossentropy",
