@@ -7,6 +7,7 @@ from tensorflow.keras.layers import (
 )
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
+import tensorflow_addons as tfa
 
 class FaceModel:
     def __init__(self, rst, num_of_classes, lr=1e-3, feat_dims=128):
@@ -59,18 +60,17 @@ class FaceModel:
         train_model = Model(inputs=[images, labels],
                             outputs=[embedding])
         train_model.compile(optimizer=Adam(self.lr),
-                            loss=[
-                                  "categorical_crossentropy",
-                                  lambda y_true, y_pred: y_pred
-                            ],
+                            loss=tfa.losses.TripletSemiHardLoss(),
                             metrics=['accuracy'])
         return train_model
 
 
-    def embbeding_model(self):
-        return Model(inputs = main_model.inputs[0],
-                     outputs = self.main_model.get_layer('side_out').get_output_at(-1),
-                     name="center_loss")
+    def embedding_model(self):
+            return Model(
+                inputs=self.main_model.inputs[0],
+                outputs= self.main_model.outputs,
+                name="embbeding",
+            )
 
 
     def train_one_epoch(self, data_gen):
