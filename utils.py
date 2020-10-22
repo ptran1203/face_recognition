@@ -94,6 +94,7 @@ def show_images(img_array, denorm=True, deprcs=True):
 
     cv2_imshow(img)
 
+
 def http_get_img(url, rst=64, gray=False, normalize=True):
     req = urllib.request.urlopen(url)
     arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
@@ -109,6 +110,7 @@ def http_get_img(url, rst=64, gray=False, normalize=True):
 
     return img
 
+
 def make_border(img, color, bordersize=3):
     return cv2.copyMakeBorder(
         img,
@@ -120,10 +122,14 @@ def make_border(img, color, bordersize=3):
         value=color
     )
 
+
 def visualize_scatter_with_images(X_2d_data, images, labels, figsize=(10,10), image_zoom=0.5):
     fig, ax = plt.subplots(figsize=figsize)
     artists = []
     colors = cm.rainbow(np.linspace(0, 1, len(np.unique(labels))))
+    # convert RBG -> BGR, change range from [-1, 1] to [0, 1]
+
+    images = de_norm(images[...,[2,1,0]]) / 255.0
 
     for xy, i, cl in zip(X_2d_data, images, labels):
         x0, y0 = xy
