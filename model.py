@@ -38,7 +38,7 @@ class FaceModel:
         return x
 
     def get_prediction(self, img, labels, support_imgs=None, metric_func='l2'):
-        if support_set is not None:
+        if support_imgs is not None:
             self.embeddings = self.embedding.predict(support_imgs)
 
         emb = self.embedding.predict(img)
