@@ -37,6 +37,19 @@ class FaceModel:
         x = Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
         return x
 
+    def get_prediction(self, img, labels, support_imgs=None, metric_func='l2'):
+        if support_set is not None:
+            self.embeddings = self.embedding.predict(support_imgs)
+
+        emb = self.embedding.predict(img)
+        distances = [
+            np.mean(np.square(emb - e)) \
+            for e in calculated_embeddings
+        ]
+
+        pred = distances.index(min(distances))
+        return labels[pred]
+
 
     def l2_loss(self, inputs):
         a, b = inputs
