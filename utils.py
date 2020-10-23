@@ -133,7 +133,7 @@ def visualize_scatter_with_images(X_2d_data, images, labels, figsize=(10,10), im
 
     for xy, i, cl in zip(X_2d_data, images, labels):
         x0, y0 = xy
-        i = make_border(i, colors[cl], 2)
+        i = make_border(i, colors[cl], 4)
         img = OffsetImage(i, zoom=image_zoom)
         ab = AnnotationBbox(img, (x0, y0), xycoords='data', frameon=False)
         artists.append(ax.add_artist(ab))
