@@ -44,7 +44,7 @@ class FaceModel:
         emb = self.embedding.predict(img)
         distances = [
             np.mean(np.square(emb - e)) \
-            for e in calculated_embeddings
+            for e in self.embeddings
         ]
 
         pred = distances.index(min(distances))
