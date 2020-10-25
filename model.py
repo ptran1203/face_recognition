@@ -36,7 +36,7 @@ class FaceModel:
         x = GlobalAveragePooling2D()(x)
         x = Dense(self.feat_dims)(x)
         # normalize
-        x = Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
+        x = Lambda(lambda x: tf.math.l2_normalize(x, axis=1))(x)
         return x
 
 
@@ -94,7 +94,7 @@ class FaceModel:
             raise("embeddings is not calculated")
 
         for x in x_test:
-            pred = facemodel.get_prediction(np.expand_dims(x,0), self.support_labels)
+            pred = self.get_prediction(np.expand_dims(x,0), self.support_labels)
             preds.append(pred)
 
         preds = np.array([preds])
