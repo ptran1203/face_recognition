@@ -61,6 +61,11 @@ def deprocess(imgs):
 def readimg(path, extract_face=True,
             normalize=True, preprcs=True,
             size=64, return_bbox=False):
+    def _r(img=None, bbox=None):
+        if return_bbox:
+            return img, bbox
+        return img
+
     bbox = None
     try:
         if path.startswith('http') or path.startswith('base'):
@@ -71,7 +76,7 @@ def readimg(path, extract_face=True,
             img = cv2.imread(path)
     except Exception as e:
         print("Could not read img, ERROR: {}".format(str(e)))
-        return None
+        return _r()
 
     if extract_face:
         img = face_localization.extract_face(img, return_bbox)
@@ -80,7 +85,7 @@ def readimg(path, extract_face=True,
 
     if img is None:
         print("Face not found in image", path)
-        return img
+        return _r()
 
     img = cv2.resize(img, (size, size))
 
@@ -90,10 +95,7 @@ def readimg(path, extract_face=True,
     if normalize:
         img = norm(img)
 
-    if return_bbox:
-        return img, bbox
-
-    return img
+    return _r(img, bbox)
 
 
 def draw_bbox(img, coordinates, text='face'):
