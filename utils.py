@@ -60,7 +60,7 @@ def deprocess(imgs):
 
 def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
     try:
-        if:
+        if path.startswith('http') or path.startswith('base'):
             req = urllib.request.urlopen(url)
             arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
             img = cv2.imdecode(arr, -1)
