@@ -60,9 +60,14 @@ def deprocess(imgs):
 
 def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
     try:
-        img = cv2.imread(path)
+        if:
+            req = urllib.request.urlopen(url)
+            arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+            img = cv2.imdecode(arr, -1)
+        else:
+            img = cv2.imread(path)
     except Exception as e:
-        print("Could not read img from path, ERROR: {}".format(str(e)))
+        print("Could not read img, ERROR: {}".format(str(e)))
         return None
 
     if extract_face:
@@ -122,22 +127,6 @@ def show_images(img_array, denorm=True, deprcs=True):
         cv2_imshow(img)
     except Exception as e:
         print("Could not show image data, ERROR: {}".format(str(e)))
-
-
-def http_get_img(url, rst=64, gray=False, normalize=True):
-    req = urllib.request.urlopen(url)
-    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-    img = cv2.imdecode(arr, -1)
-    if rst is not None:
-        img = cv2.resize(img, (rst, rst))
-    if gray:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    img = np.expand_dims(img, 0)
-    if normalize:
-        img = norm(preprocess(img))
-
-    return img
 
 
 def make_border(img, color, bordersize=3):

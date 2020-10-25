@@ -9,6 +9,8 @@ from tensorflow.keras.layers import (
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
 import tensorflow_addons as tfa
+from scipy.spatial.distance import cosine
+
 
 class FaceModel:
     def __init__(self, rst, num_of_classes, lr=1e-3, feat_dims=128):
@@ -37,40 +39,32 @@ class FaceModel:
         x = Lambda(lambda x: tf.math.l2_normalize(x, axis=1))
         return x
 
+
     def get_prediction(self, img, labels, support_imgs=None, metric_func='l2'):
         if support_imgs is not None:
             self.embeddings = self.embedding.predict(support_imgs)
 
         emb = self.embedding.predict(img)
         distances = [
-            np.mean(np.square(emb - e)) \
+            1 - cosine(emb[0], e)
             for e in self.embeddings
         ]
 
-        pred = distances.index(min(distances))
+        pred = distances.index(max(distances))
         return labels[pred]
-
-
-    def l2_loss(self, inputs):
-        a, b = inputs
-        return K.sum(
-            K.square(a - b[:, 0]),
-            axis=1,
-            keepdims=True,
-        )
 
 
     def build_main_model(self):
         images = Input(self.input_shape)
-        labels = Input((1,))
         embedding = self.feature_extractor(images)
 
-        train_model = Model(inputs=[images, labels],
+        train_model = Model(inputs=[images],
                             outputs=[embedding])
         train_model.compile(optimizer=Adam(self.lr),
                             loss=tfa.losses.TripletSemiHardLoss(),
-                            metrics=['accuracy'])
+                            )
         return train_model
+
 
 
     def embedding_model(self):
@@ -81,57 +75,33 @@ class FaceModel:
             )
 
 
-    def train_one_epoch(self, data_gen):
-        total_loss = []
-        for x, y in batch_gen.next_batch():
-            total_loss.append(self.main_model.train_on_batch(x, y))
+    def train(self, data_gen, epochs=5):
+        # simply fit the model
+        tfgen = tf.data.Dataset.from_tensor_slices((data_gen.x, data_gen.y)). \
+                            repeat(). \
+                            shuffle(1024).batch(64)
 
-        return np.mean(np.array(total_loss), axis=0)
+        self.history = self.main_model.fit(tfgen, steps_per_epoch=32, epochs=epochs)
 
-
-    @staticmethod
-    def init_hist():
-        return {
-            "loss": [],
-            "acc": [],
-            "val_loss": [],
-            "val_acc": [],
-        }
+    
+    def calculate_embeddings(self, x, y):
+        self.embeddings = self.embedding.predict(x)
+        self.support_labels = y
 
 
-    def train(self, data_gen, epochs=50):
-        print("Train autoencoder model")
-        print("Train on {} samples".format(len(data_gen.x)))
-        history = self.init_hist()
+    def evaluate(self, x_test, y_test):
+        if not hasattr(self, 'embeddings'):
+            raise("embeddings is not calculated")
 
-        for e in range(epochs):
-            start_time = datetime.datetime.now()
-            print("Train epochs {}/{} - ".format(e + 1, epochs), end="")
+        for x in x_test:
+            pred = facemodel.get_prediction(np.expand_dims(x,0), self.support_labels)
+            preds.append(pred)
 
-            batch_loss = self.init_hist()
+        preds = np.array([preds])
+        return (preds == y_test).mean()
 
-            for x, y in data_gen.next_batch():
-                loss, _,_,acc,_ = self.main_model.train_on_batch(x, y)
-                batch_loss['loss'].append(loss)
 
-            # evaluation
-            # batch_loss['val_loss'] = self.main_model.evaluate(test_gen.x_test,
-            #                                                   test_gen.y_test,
-            #                                                   verbose=False)
 
-            mean_loss = np.mean(np.array(batch_loss['loss']))
-            # mean_val_loss = np.mean(np.array(batch_loss['val_loss']))
-
-            history['loss'].append(mean_loss)
-            # history['val_loss'].append(mean_val_loss)
-
-            print("Loss: {}, Val Loss: {} - {}".format(
-                mean_loss, 0,
-                datetime.datetime.now() - start_time
-            ))
-
-        self.history = history
-        return history
 
 
     
