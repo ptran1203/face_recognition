@@ -88,11 +88,12 @@ def readimg(path, extract_face=True,
         return None, None, None
 
     if extract_face:
-        face, bbox = face_localization.extract_face(img, True)
+        face = face_localization.extract_face(img, True)
         if face is None:
             print("Face not found in image", path)
             return None, None, None
 
+        face, bbox = face
         face = _processing(face, normalize, preprcs)
         face = cv2.resize(face, (size, size))
     else:
