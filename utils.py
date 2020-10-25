@@ -72,7 +72,7 @@ def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
         print("Face not found in image", path)
         return img
 
-    img = image_resize(img, (size, size))
+    img = cv2.resize(img, (size, size))
 
     if preprcs:
         img = preprocess(img)
