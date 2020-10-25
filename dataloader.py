@@ -55,7 +55,7 @@ class DataGenerator:
                 for fname in os.listdir(dir_):
                     # Get the face image
                     _, _, img = utils.readimg(os.path.join(dir_, fname),
-                                          extract_face=True,
+                                          get_face=True,
                                           normalize=False,
                                           preprcs=False,
                                           size=self.img_resolution)

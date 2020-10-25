@@ -68,7 +68,7 @@ def _processing(img, normalize, preprcs):
     return img
 
 
-def readimg(path, extract_face=True,
+def readimg(path, get_face=True,
             normalize=True, preprcs=True,
             size=64):
     """
@@ -87,7 +87,7 @@ def readimg(path, extract_face=True,
         print("Could not read img, ERROR: {}".format(str(e)))
         return None, None, None
 
-    if extract_face:
+    if get_face:
         face = face_localization.extract_face(img, True)
         if face is None:
             print("Face not found in image", path)
@@ -100,7 +100,7 @@ def readimg(path, extract_face=True,
         img = _processing(img, normalize, preprcs)
         img = cv2.resize(img, (size, size))
 
-    return img, bbox, img
+    return img, bbox, face
 
 
 def draw_bbox(img, coordinates, text='face'):
