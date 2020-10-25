@@ -7,7 +7,7 @@ from keras.utils import to_categorical
 
 
 class DataGenerator:
-    def __init__(self, batch_size=64, data_path, img_resolution=128):
+    def __init__(self, data_path, batch_size=64, img_resolution=128):
         self.batch_size = batch_size
         self.img_resolution = img_resolution
         self.loaddata(data_path)
