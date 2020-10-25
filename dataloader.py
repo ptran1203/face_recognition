@@ -53,7 +53,8 @@ class DataGenerator:
             for sub_dir in os.listdir(data_path):
                 dir_ = os.path.join(data_path, sub_dir)
                 for fname in os.listdir(dir_):
-                    img = utils.readimg(os.path.join(dir_, fname),
+                    # Get the face image
+                    _, _, img = utils.readimg(os.path.join(dir_, fname),
                                           extract_face=True,
                                           normalize=False,
                                           preprcs=False,

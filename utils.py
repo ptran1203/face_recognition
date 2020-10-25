@@ -58,15 +58,24 @@ def deprocess(imgs):
     return imgs + MEAN_PIXCELS
 
 
+def _processing(img, normalize, preprcs):
+    if preprcs:
+        img = preprocess(img)
+
+    if normalize:
+        img = norm(img)
+    
+    return img
+
+
 def readimg(path, extract_face=True,
             normalize=True, preprcs=True,
-            size=64, return_bbox=False):
-    def _r(img=None, bbox=None):
-        if return_bbox:
-            return img, bbox
-        return img
-
+            size=64):
+    """
+    returns image, bbox, face
+    """
     bbox = None
+    face = None
     try:
         if path.startswith('http') or path.startswith('base'):
             req = urllib.request.urlopen(path)
@@ -76,26 +85,21 @@ def readimg(path, extract_face=True,
             img = cv2.imread(path)
     except Exception as e:
         print("Could not read img, ERROR: {}".format(str(e)))
-        return _r()
+        return None, None, None
 
     if extract_face:
-        img = face_localization.extract_face(img, return_bbox)
-        if return_bbox:
-            img, bbox = img
+        face, bbox = face_localization.extract_face(img, True)
+        if face is None:
+            print("Face not found in image", path)
+            return None, None, None
 
-    if img is None:
-        print("Face not found in image", path)
-        return _r()
+        face = _processing(face, normalize, preprcs)
+        face = cv2.resize(face, (size, size))
+    else:
+        img = _processing(img, normalize, preprcs)
+        img = cv2.resize(img, (size, size))
 
-    img = cv2.resize(img, (size, size))
-
-    if preprcs:
-        img = preprocess(img)
-
-    if normalize:
-        img = norm(img)
-
-    return _r(img, bbox)
+    return img, bbox, img
 
 
 def draw_bbox(img, coordinates, text='face'):
