@@ -5,6 +5,7 @@ import keras.preprocessing.image as image_processing
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import cv2
+import face_localization
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -57,12 +58,19 @@ def deprocess(imgs):
     return imgs + MEAN_PIXCELS
 
 
-def readimg(path, normalize=True, preprcs=True, size=64):
+def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
     try:
         img = cv2.imread(path)
     except Exception as e:
         print("Could not read img from path, ERROR: {}".format(str(e)))
         return None
+
+    if extract_face:
+        img = face_localization.extract_face(img)
+
+    if img is None:
+        print("Face not found in image", path)
+        return img
 
     img = image_resize(img, size, size)
 
