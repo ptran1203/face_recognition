@@ -14,7 +14,7 @@ def extract_box(image, single = True):
 
     return boxs
 
-def extract_face(image, face_scale_thres = (20, 20)):
+def extract_face(image, return_bbox=False, face_scale_thres = (20, 20)):
     h, w = image.shape[:2]
 
     try:
@@ -31,5 +31,8 @@ def extract_face(image, face_scale_thres = (20, 20)):
     # ensure the face width and height are sufficiently large
     if fW < face_scale_thres[0] or fH < face_scale_thres[1]:
         return None
+
+    if return_bbox:
+        return face, (startY, startX, endY, endX)
 
     return face

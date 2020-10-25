@@ -58,7 +58,10 @@ def deprocess(imgs):
     return imgs + MEAN_PIXCELS
 
 
-def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
+def readimg(path, extract_face=True,
+            normalize=True, preprcs=True,
+            size=64, return_bbox=False):
+    bbox = None
     try:
         if path.startswith('http') or path.startswith('base'):
             req = urllib.request.urlopen(path)
@@ -71,7 +74,9 @@ def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
         return None
 
     if extract_face:
-        img = face_localization.extract_face(img)
+        img = face_localization.extract_face(img, return_bbox)
+        if return_bbox:
+            img, bbox = img
 
     if img is None:
         print("Face not found in image", path)
@@ -85,6 +90,17 @@ def readimg(path, extract_face=True, normalize=True, preprcs=True, size=64):
     if normalize:
         img = norm(img)
 
+    if return_bbox:
+        return img, bbox
+
+    return img
+
+
+def draw_bbox(img, coordinates, text='face'):
+    "The pixcel's range should be [0, 255]"
+    x, y, w, h = coordinatess
+    cv2.rectangle(img,(x, y),(x + w, y + h),(0,0,0),1)
+    cv2.putText(img, text,(x + w, y + h + 10), 0, 0.3, (0,0,0))
     return img
 
 
