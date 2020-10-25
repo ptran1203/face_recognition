@@ -8,26 +8,39 @@ from keras.utils import to_categorical
 
 class DataGenerator:
     def __init__(self, data_path, batch_size=64, img_resolution=128):
-        self.batch_size = batch_size
         self.img_resolution = img_resolution
+        self.batch_size = batch_size
         self.loaddata(data_path)
+        show_images(self.x[:10], False, False)
 
-        self.x, self.x_test, self.labels, self.labels_test = train_test_split(self.x, self.y, test_size=0.3)
+        # filter identities have more than 1 image
+        self.x, self.labels = self.filter_one_image(self.x, self.labels)
+        self.x = utils.norm(self.x)
 
-        all_labels = np.unique(self.labels)
+        self.x, self.x_test, self.labels, self.labels_test = train_test_split(self.x, self.labels, test_size=0.3)
+
+        self.x_test, self.labels_test = self.filter_one_image(self.x_test, self.labels_test)
+
         _, self.y = np.unique(self.labels, return_inverse=True)
+        _, self.y_test = np.unique(self.labels_test, return_inverse=True)
 
         print(self.labels.shape, self.y.shape)
-
-        self.dummy = np.zeros((self.batch_size, 129))
-
-        self.x = utils.norm(self.x)
 
         self.classes = np.unique(self.y)
         self.per_class_ids = {}
         ids = np.array(range(len(self.x)))
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
+
+
+    @staticmethod
+    def filter_one_image(x, y):
+        # filter identities have more than 1 image
+        counter = Counter(y)
+        filtered = ([c for c in counter if counter[c] > 1])
+        indices = np.where(np.in1d(y, filtered))
+
+        return x[indices], y[indices]
 
     
     def loaddata(self, data_path):
@@ -41,8 +54,10 @@ class DataGenerator:
                 dir_ = os.path.join(data_path, sub_dir)
                 for fname in os.listdir(dir_):
                     img = readimg.readimg(os.path.join(dir_, fname),
-                                          self.img_resolution,
-                                          self.img_resolution)
+                                          extract_face=True,
+                                          normalize=False,
+                                          preprcs=False
+                                          size=self.img_resolution)
                     if img is not None:
                         imgs.append(img)
                         labels.append(sub_dir)
