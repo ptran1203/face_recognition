@@ -7,15 +7,18 @@ from keras.utils import to_categorical
 
 
 class DataGenerator:
-    def __init__(self, base_dir, batch_size=64):
-        self.base_dir = base_dir
+    def __init__(self, batch_size=64, data_path, img_resolution=128):
         self.batch_size = batch_size
-        self.x, self.labels = utils.pickle_load(self.base_dir + '/dataset/imgs_labels.pkl')
+        self.img_resolution = img_resolution
+        self.loaddata(data_path)
+
         self.x, self.x_test, self.labels, self.labels_test = train_test_split(self.x, self.y, test_size=0.3)
 
         all_labels = np.unique(self.labels)
         _, self.y = np.unique(self.labels, return_inverse=True)
+
         print(self.labels.shape, self.y.shape)
+
         self.dummy = np.zeros((self.batch_size, 129))
 
         self.x = utils.norm(self.x)
@@ -26,6 +29,27 @@ class DataGenerator:
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
 
+    
+    def loaddata(self, data_path):
+        if data_path.endswith(".pkl"):
+            self.x, self.labels = utils.pickle_load(data_path)
+        else:
+            print("Read data from directory")
+            labels = []
+            imgs = []
+            for sub_dir in os.listdir(data_path):
+                dir_ = os.path.join(data_path, sub_dir)
+                for fname in os.listdir(dir_):
+                    img = readimg.readimg(os.path.join(dir_, fname),
+                                          self.img_resolution,
+                                          self.img_resolution)
+                    if img is not None:
+                        imgs.append(img)
+                        labels.append(sub_dir)
+
+            print("Done, {} images were loaded".format(len(imgs)))
+            self.x = np.array(imgs)
+            self.labels = np.array(labels)
 
 
     def get_samples_for_class(self, c, samples=None):
