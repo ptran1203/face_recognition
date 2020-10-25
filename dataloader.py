@@ -11,7 +11,7 @@ class DataGenerator:
         self.img_resolution = img_resolution
         self.batch_size = batch_size
         self.loaddata(data_path)
-        show_images(self.x[:10], False, False)
+        utils.show_images(self.x[:10], False, False)
 
         # filter identities have more than 1 image
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
