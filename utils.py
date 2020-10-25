@@ -95,30 +95,33 @@ def transform(x, seed=0):
 
 
 def show_images(img_array, denorm=True, deprcs=True):
-    shape = img_array.shape
-    img_array = img_array.reshape(
-        (-1, shape[-4], shape[-3], shape[-2], shape[-1])
-    )
-    # convert 1 channel to 3 channels
-    channels = img_array.shape[-1]
-    resolution = img_array.shape[2]
-    img_rows = img_array.shape[0]
-    img_cols = img_array.shape[1]
+    try:
+        shape = img_array.shape
+        img_array = img_array.reshape(
+            (-1, shape[-4], shape[-3], shape[-2], shape[-1])
+        )
+        # convert 1 channel to 3 channels
+        channels = img_array.shape[-1]
+        resolution = img_array.shape[2]
+        img_rows = img_array.shape[0]
+        img_cols = img_array.shape[1]
 
-    img = np.full([resolution * img_rows, resolution * img_cols, channels], 0.0)
-    for r in range(img_rows):
-        for c in range(img_cols):
-            img[
-            (resolution * r): (resolution * (r + 1)),
-            (resolution * (c % 10)): (resolution * ((c % 10) + 1)),
-            :] = img_array[r, c]
+        img = np.full([resolution * img_rows, resolution * img_cols, channels], 0.0)
+        for r in range(img_rows):
+            for c in range(img_cols):
+                img[
+                (resolution * r): (resolution * (r + 1)),
+                (resolution * (c % 10)): (resolution * ((c % 10) + 1)),
+                :] = img_array[r, c]
 
-    if denorm:
-        img = de_norm(img)
-    if deprcs:
-        img = deprocess(img)
+        if denorm:
+            img = de_norm(img)
+        if deprcs:
+            img = deprocess(img)
 
-    cv2_imshow(img)
+        cv2_imshow(img)
+    except Exception as e:
+        print("Could not show image data, ERROR: {}".format(str(e)))
 
 
 def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
