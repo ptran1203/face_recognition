@@ -56,7 +56,7 @@ class DataGenerator:
                     img = readimg.readimg(os.path.join(dir_, fname),
                                           extract_face=True,
                                           normalize=False,
-                                          preprcs=False
+                                          preprcs=False,
                                           size=self.img_resolution)
                     if img is not None:
                         imgs.append(img)
