@@ -10,7 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
 import tensorflow_addons as tfa
 from scipy.spatial.distance import cosine
-
+import numpy as np
 
 class FaceModel:
     def __init__(self, rst, num_of_classes, lr=1e-3, feat_dims=128):
@@ -93,6 +93,7 @@ class FaceModel:
         if not hasattr(self, 'embeddings'):
             raise("embeddings is not calculated")
 
+        preds = []
         for x in x_test:
             pred = self.get_prediction(np.expand_dims(x,0), self.support_labels)
             preds.append(pred)

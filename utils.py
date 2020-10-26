@@ -100,15 +100,14 @@ def readimg(path, get_face=True,
         img = _processing(img, normalize, preprcs)
         img = cv2.resize(img, (size, size))
 
-    return img, bbox, face
+    return img, bbox, face  
 
 
-def draw_bbox(img, coordinates, text='face'):
+def draw_bbox(img, coordinates, text='face', color=(0,0,0)):
     "The pixcel's range should be [0, 255]"
-    x, y, w, h = coordinatess
-    cv2.rectangle(img,(x, y),(x + w, y + h),(0,0,0),1)
-    cv2.putText(img, text,(x + w, y + h + 10), 0, 0.3, (0,0,0))
-    return img
+    x, y, w, h = coordinates
+    cv2.rectangle(img,(x, y),(x + w, y + h), color, 2)
+    return cv2.putText(img, text,(x + w, y - 20), 0, 1, color)
 
 
 def transform(x, seed=0):

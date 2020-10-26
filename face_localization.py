@@ -33,6 +33,6 @@ def extract_face(image, return_bbox=False, face_scale_thres = (20, 20)):
         return None
 
     if return_bbox:
-        return face, (startY, startX, endY, endX)
+        return face, (startX, startY, endX - startX, endY - startY)
 
     return face
