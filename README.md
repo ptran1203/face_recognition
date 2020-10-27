@@ -23,8 +23,8 @@ To train the face recognition, we have to drop the face of each image in the dat
 
 #### Result
 
-The model archive accuracy of `77.78%` on test data
-Visulization of learned face embedding ploted with T-SNE
+- The model archive accuracy of `77.78%` on test data
+- Visulization of learned face embedding ploted with T-SNE
 
 ![face_representation](./images/scatter_feat.png)
 
