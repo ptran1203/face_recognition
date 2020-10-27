@@ -25,7 +25,7 @@ class DataGenerator:
                 utils.split_by_label(self.x, self.labels, test_size=test_size) if split_option == SPLIT_BY_LABEL \
                 else train_test_split(self.x, self.labels, test_size=test_size)
 
-        self.x_test, self.labels_test = self.filter_one_image(self.x_test, self.labels_test)
+        # self.x_test, self.labels_test = self.filter_one_image(self.x_test, self.labels_test)
 
         _, self.y = np.unique(self.labels, return_inverse=True)
         _, self.y_test = np.unique(self.labels_test, return_inverse=True)

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import cv2
 import face_localization
+import seaborn as sns
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -235,3 +236,10 @@ def split_by_label(x, y, test_size=0.3):
 
     return (x[to_train_idx], y[to_train_idx],
             x[to_test_idx], y[to_test_idx])
+
+
+def plot_data_distribution(labels, vertical="Identities"):
+    """
+    inputs: labels <list/array of string>
+    """
+    sns.displot(labels, x=vertical, discrete=True)
