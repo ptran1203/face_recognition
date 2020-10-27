@@ -50,8 +50,9 @@ class FaceModel:
             for e in self.embeddings
         ]
 
-        pred = distances.index(max(distances))
-        return labels[pred]
+        pred_prob = max(distances)
+        pred = distances.index(pred_prob)
+        return labels[pred], pred_prob
 
 
     def build_main_model(self):
@@ -95,7 +96,7 @@ class FaceModel:
 
         preds = []
         for x in x_test:
-            pred = self.get_prediction(np.expand_dims(x,0), self.support_labels)
+            pred, _ = self.get_prediction(np.expand_dims(x,0), self.support_labels)
             preds.append(pred)
 
         preds = np.array([preds])
