@@ -4,13 +4,15 @@
 Keras/Tensorflow implementation of face recognition model using [triplet loss](https://arxiv.org/abs/1503.03832)
 
 ## Dataset
-The [dataset](/dataset) is collected manually from google image search and Facebook, including 10 identities with data distribution as follow
+The [dataset](/dataset) is collected manually from google image search, we have automated with python script [download_data.py](./download_data.py)
+
+We collected 12 identities with data distribution as follow
 
 <Data distribution image>
 
 ### Data preparation
 
-To train the face recognition, we have to drop the face of each image in the dataset, to accomplish this, [face_recognition](https://pypi.org/project/face-recognition/) module is used to detect face bounding boxes, then we can drop the face to train the face recognizer.
+Since the image downloaded from google search may not be usable, to train the face recognition, we have to drop the face of each image in the dataset, to accomplish this, [face_recognition](https://pypi.org/project/face-recognition/) module is used to detect face bounding boxes, then we can drop the face to train the face recognizer. There are some images that could not detect the face.
 
 <Origin data and droped data>
 

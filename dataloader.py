@@ -11,7 +11,6 @@ class DataGenerator:
         self.img_resolution = img_resolution
         self.batch_size = batch_size
         self.loaddata(data_path)
-        utils.show_images(self.x[:10], False, False)
 
         # filter identities have more than 1 image
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
@@ -31,6 +30,7 @@ class DataGenerator:
         ids = np.array(range(len(self.x)))
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
+            utils.show_images(self.x[self.per_class_ids[c]][:10], False, False)
 
 
     @staticmethod
