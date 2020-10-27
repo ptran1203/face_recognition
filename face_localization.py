@@ -20,7 +20,6 @@ def extract_face(image, return_bbox=False, face_scale_thres = (20, 20)):
     try:
         (startY, startX, endY, endX) = extract_box(image)
     except Exception as e:
-        print(e)
         return None
 
     minX, maxX = min(startX, endX), max(startX, endX)

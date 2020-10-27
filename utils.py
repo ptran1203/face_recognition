@@ -219,3 +219,19 @@ def scatter_plot(x, y, encoder, name='chart', opt='pca', plot_img=None,
         return visualize_scatter_with_images(decomposed_embeddings, x, y, figsize, image_zoom)
 
     visualize_scatter(decomposed_embeddings, y, legend=legend,title=title)
+
+
+def split_by_label(x, y, test_size=0.3):
+    classes = np.unique(y)
+    np.random.shuffle(classes)
+    for_test = int(len(classes) * test_size)
+    ids = np.arange(len(x))
+    per_class_ids = {
+        c: ids[y == c] for c in classes
+    }
+
+    to_train_idx = np.concatenate([per_class_ids[c] for c in classes[:for_test]])
+    to_test_idx = np.concatenate([per_class_ids[c] for c in classes[for_test:]])
+
+    return (x[to_train_idx], y[to_train_idx],
+            x[to_test_idx], y[to_test_idx])

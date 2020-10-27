@@ -7,7 +7,12 @@ from keras.utils import to_categorical
 
 
 class DataGenerator:
-    def __init__(self, data_path, batch_size=64, img_resolution=128):
+    def __init__(self, data_path, batch_size=64, img_resolution=128,
+                split_option=1, test_size=0.3):
+
+        SPLIT_BY_LABEL = 1
+        NORMAL_SPLIT = 2
+
         self.img_resolution = img_resolution
         self.batch_size = batch_size
         self.loaddata(data_path)
@@ -16,7 +21,9 @@ class DataGenerator:
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
         self.x = utils.norm(self.x)
 
-        self.x, self.x_test, self.labels, self.labels_test = train_test_split(self.x, self.labels, test_size=0.3)
+        self.x, self.x_test, self.labels, self.labels_test = \
+                utils.split_by_label(self.x, self.labels, test_size=test_size) if split_option == SPLIT_BY_LABEL \
+                else train_test_split(self.x, self.labels, test_size=test_size)
 
         self.x_test, self.labels_test = self.filter_one_image(self.x_test, self.labels_test)
 
@@ -30,7 +37,7 @@ class DataGenerator:
         ids = np.array(range(len(self.x)))
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
-            utils.show_images(self.x[self.per_class_ids[c]][:10], False, False)
+            utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
 
 
     @staticmethod
