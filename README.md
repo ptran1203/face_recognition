@@ -19,7 +19,7 @@ To train the face recognition, we have to drop the face of each image in the dat
 ### 2. Train the model from scratch
 - Pre-trained VGG16 is used to extract feature representation. The feature then is normalized using l2 normalization.
 
-![face_model](./face_model.jpg)
+![face_model](./images/face_model.jpg)
 
 #### Result
 
@@ -28,4 +28,4 @@ Visulization of learned face embedding ploted with T-SNE
 
 ![face_representation](./images/scatter_feat.png)
 
-![chipu](./images/chipu_detected.png)
+![chipu](./images/chipu_.png)
