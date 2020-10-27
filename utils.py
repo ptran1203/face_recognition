@@ -234,8 +234,8 @@ def split_by_label(x, y, test_size=0.3):
     to_train_idx = np.concatenate([per_class_ids[c] for c in classes[:for_test]])
     to_test_idx = np.concatenate([per_class_ids[c] for c in classes[for_test:]])
 
-    return (x[to_train_idx], y[to_train_idx],
-            x[to_test_idx], y[to_test_idx])
+    return (x[to_train_idx], x[to_test_idx],
+            y[to_train_idx], y[to_test_idx])
 
 
 def plot_data_distribution(labels, vertical="Identities"):
