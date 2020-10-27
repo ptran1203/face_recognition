@@ -26,7 +26,7 @@ Since the image downloaded from google search may not be usable, to train the fa
 #### Result
 
 - The model archive accuracy of `77.78%` on test data
-- Visulization of learned face embedding ploted with T-SNE
+- Visualization of learned face embedding plotted with T-SNE
 
 ![face_representation](./images/scatter_feat.png)
 
