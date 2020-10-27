@@ -1,10 +1,11 @@
 import numpy as np
+import seaborn as sns
 import utils
 from collections import Counter
 import os
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
-
+sns.set_theme()
 
 class DataGenerator:
     def __init__(self, data_path, batch_size=64, img_resolution=128,
@@ -17,20 +18,26 @@ class DataGenerator:
         self.batch_size = batch_size
         self.loaddata(data_path)
 
+        print("Loaded data distribution")
+        sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
+
         # filter identities have more than 1 image
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
-        self.x = utils.norm(self.x)
 
+        self.x = utils.norm(self.x)
+        
         self.x, self.x_test, self.labels, self.labels_test = \
                 utils.split_by_label(self.x, self.labels, test_size=test_size) if split_option == SPLIT_BY_LABEL \
                 else train_test_split(self.x, self.labels, test_size=test_size)
 
-        # self.x_test, self.labels_test = self.filter_one_image(self.x_test, self.labels_test)
+        self.x_test, self.x_support, self.labels_test, self.labels_support = \
+                train_test_split(self.x_test, self.labels_test, test_size=0.1)
 
+
+        # convert string label to numberical label
         _, self.y = np.unique(self.labels, return_inverse=True)
         _, self.y_test = np.unique(self.labels_test, return_inverse=True)
-
-        print(self.labels.shape, self.y.shape)
+        _, self.y_support = np.unique(self.labels_support, return_inverse=True)
 
         self.classes = np.unique(self.y)
         self.per_class_ids = {}
@@ -38,6 +45,9 @@ class DataGenerator:
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
+
+        print("Training data distribution")
+        sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
 
 
     @staticmethod
@@ -51,7 +61,10 @@ class DataGenerator:
 
     
     def loaddata(self, data_path):
-        if data_path.endswith(".pkl"):
+        temp_file_name = "./temp_data.pkl"
+        if os.path.isfile(temp_file_name):
+            self.x, self.labels = utils.pickle_load(temp_file_name)
+        elif data_path.endswith(".pkl"):
             self.x, self.labels = utils.pickle_load(data_path)
         else:
             print("Read data from directory")
@@ -73,6 +86,8 @@ class DataGenerator:
             print("Done, {} images were loaded".format(len(imgs)))
             self.x = np.array(imgs)
             self.labels = np.array(labels)
+
+            utils.pickle_save((self.x, self.labels), temp_file_name)
 
 
     def get_samples_for_class(self, c, samples=None):
