@@ -59,6 +59,10 @@ class DataGenerator:
 
         return x[indices], y[indices]
 
+
+    def get_data_for_class(self, classid):
+        return self.x[self.per_class_ids[classid]]
+
     
     def loaddata(self, data_path):
         temp_file_name = "./temp_data.pkl"

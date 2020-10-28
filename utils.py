@@ -165,6 +165,9 @@ def make_border(img, color, bordersize=3):
 
 
 def visualize_scatter_with_images(X_2d_data, images, labels, figsize=(10,10), image_zoom=0.5):
+    if type(labels[0]) is not int:
+        labels = list(range(len(labels)))
+
     fig, ax = plt.subplots(figsize=figsize)
     artists = []
     colors = cm.rainbow(np.linspace(0, 1, len(np.unique(labels))))
