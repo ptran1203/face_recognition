@@ -220,6 +220,7 @@ def scatter_plot(x, y, encoder, name='chart', opt='pca', plot_img=None,
     decomposed_embeddings = DECOMPOSERS[opt].fit_transform(x_embeddings)
 
     if plot_img:
+        assert opt == 'tsne'
         return visualize_scatter_with_images(decomposed_embeddings, x, y, figsize, image_zoom)
 
     visualize_scatter(decomposed_embeddings, y, legend=legend,title=title)
