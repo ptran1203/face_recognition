@@ -120,7 +120,7 @@ class AutoEncoder:
         filters = [64, 128, 256]
         for f in filters:
             x = Conv2D(f, kernel_size=3,
-                        strides=2, padding="same")(inp)
+                        strides=2, padding="same")(x)
             x = Activation('relu')(x)
             x = BatchNormalization()(x)
 
@@ -158,4 +158,4 @@ class AutoEncoder:
                             repeat(). \
                             shuffle(1024).batch(64)
 
-        self.history = self.main_model.fit(tfgen, steps_per_epoch=32, epochs=epochs)
+        self.history = self.model.fit(tfgen, steps_per_epoch=32, epochs=epochs)
