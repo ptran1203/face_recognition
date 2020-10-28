@@ -18,8 +18,7 @@ class DataGenerator:
         self.batch_size = batch_size
         self.loaddata(data_path)
 
-        print("Loaded data distribution")
-        # sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
+        self.init_labels = np.copy(self.labels)
 
         # filter identities have more than 1 image
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
@@ -46,8 +45,6 @@ class DataGenerator:
             self.per_class_ids[c] = ids[self.y == c]
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
 
-        print("Training data distribution")
-        # sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
 
 
     @staticmethod
