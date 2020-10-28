@@ -110,6 +110,8 @@ class AutoEncoder:
         self.rst = rst
         self.input_shape = (rst, rst, 3)
         self.latent_dim = latent_dim
+        self.build_network()
+
 
     def _build_encoder(self):
         inp = Input(shape=self.input_shape)
