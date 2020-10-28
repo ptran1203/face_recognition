@@ -6,6 +6,7 @@ from tensorflow.keras.layers import (
     Input, Conv2D, GlobalAveragePooling2D,
     Dense, Reshape, Lambda, Activation,
     BatchNormalization, Conv2DTranspose,
+    Flatten,
 )
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
