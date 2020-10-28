@@ -106,11 +106,11 @@ class FaceModel:
 
 class AutoEncoder:
     def __init__(self, lr, rst, latent_dim=128):
-        self.lr = lr
         self.rst = rst
         self.input_shape = (rst, rst, 3)
         self.latent_dim = latent_dim
         self.build_network()
+        self.model.compile(optimizer=Adam(lr=lr), loss='mse')
 
 
     def _build_encoder(self):
@@ -139,7 +139,7 @@ class AutoEncoder:
         inp = Input(shape=self.input_shape)
         x = self.encoder(inp)
         x = Dense(h*w*c)(x)
-		x = Reshape(self.init_shape[1:])(x)
+        x = Reshape(self.init_shape[1:])(x)
         for f in filters:
             x = Conv2DTranspose(f, kernel_size=3, strides=2, padding="same")(x)
             x = Activation('relu')(x)
