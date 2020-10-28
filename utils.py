@@ -91,7 +91,6 @@ def readimg(path, get_face=True,
     if get_face:
         face = face_localization.extract_face(img, True)
         if face is None:
-            print("Face not found in image", path)
             return None, None, None
 
         face, bbox = face
