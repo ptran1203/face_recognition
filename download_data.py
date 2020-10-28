@@ -75,9 +75,6 @@ if __name__ == "__main__":
         "dong nhi",
         "singer min",
         "den vau",
-    ]
-
-    names = [
         "madong seok",
         "kim da mi",
         "park seo joon",

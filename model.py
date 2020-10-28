@@ -4,7 +4,8 @@ import datetime
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import (
     Input, Conv2D, GlobalAveragePooling2D,
-    Dense, Embedding, Lambda, Activation
+    Dense, Reshape, Lambda, Activation,
+    BatchNormalization, Conv2DTranspose,
 )
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD
@@ -103,7 +104,55 @@ class FaceModel:
         return (preds == y_test).mean()
 
 
+class AutoEncoder:
+    def __init__(self, lr, rst, latent_dim=128):
+        self.lr = lr
+        self.rst = rst
+        self.input_shape = (rst, rst, 3)
+        self.latent_dim = latent_dim
+
+    def _build_encoder(self):
+        inp = Input(shape=self.input_shape)
+        x = inp
+        filters = [64, 128, 256]
+        for f in filters:
+            x = Conv2D(f, kernel_size=3,
+                        strides=2, padding="same")(inp)
+            x = Activation('relu')(x)
+            x = BatchNormalization()(x)
+
+        # init shape for decoder
+        self.init_shape = K.int_shape(x)
+        latent = Flatten()(x)
+        latent = Dense(self.latent_dim)(latent)
+        self.encoder = Model(inputs=inp, outputs=latent, name="encoder")
 
 
+    def build_network(self):
+        self._build_encoder()
+        _, h, w, c = self.init_shape
+        filters = [256, 128, 64]
 
-    
+        # decoder
+        inp = Input(shape=self.input_shape)
+        x = self.encoder(inp)
+        x = Dense(h*w*c)(x)
+		x = Reshape(self.init_shape[1:])(x)
+        for f in filters:
+            x = Conv2DTranspose(f, kernel_size=3, strides=2, padding="same")(x)
+            x = Activation('relu')(x)
+            x = BatchNormalization()(x)
+
+        out = Conv2D(3, kernel_size=3,
+                    strides=1, padding="same",
+                    activation="tanh")(x)
+
+        self.model = Model(inputs=inp, outputs=out, name="base_model")
+
+
+    def train(self, data_gen, epochs=5):
+        tfgen = tf.data.Dataset.from_tensor_slices((data_gen.x, data_gen.x)). \
+                            repeat(). \
+                            shuffle(1024).batch(64)
+
+        self.history = self.main_model.fit(tfgen, steps_per_epoch=32, epochs=epochs)
