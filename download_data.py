@@ -77,6 +77,14 @@ if __name__ == "__main__":
         "den vau",
     ]
 
+    names = [
+        "madong seok",
+        "kim da mi",
+        "park seo joon",
+        "misthy",
+        "minh nghi",
+    ]
+
     size = 20
     for name in names:
         download_images(name, size)

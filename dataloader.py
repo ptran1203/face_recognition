@@ -19,7 +19,7 @@ class DataGenerator:
         self.loaddata(data_path)
 
         print("Loaded data distribution")
-        sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
+        # sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
 
         # filter identities have more than 1 image
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
@@ -47,7 +47,7 @@ class DataGenerator:
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
 
         print("Training data distribution")
-        sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
+        # sns.displot(self.labels, height=8.27, aspect=11.7/8.27)
 
 
     @staticmethod
