@@ -69,6 +69,13 @@ def _processing(img, normalize, preprcs):
     return img
 
 
+def get_image_http(url):
+    req = urllib.request.urlopen(url)
+    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+    img = cv2.imdecode(arr, -1)
+    return img
+
+
 def readimg(path, get_face=True, normalize=True, preprcs=True, size=64):
     """
     @returns: image, bbox, face
@@ -77,9 +84,7 @@ def readimg(path, get_face=True, normalize=True, preprcs=True, size=64):
     face = None
     try:
         if path.startswith("http") or path.startswith("base"):
-            req = urllib.request.urlopen(path)
-            arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-            img = cv2.imdecode(arr, -1)
+            img = get_image_http(path)
         else:
             img = cv2.imread(path)
     except Exception as e:
@@ -105,7 +110,8 @@ def draw_bbox(img, coordinates, text="face", color=(0, 0, 0)):
     "The pixcel's range should be [0, 255]"
     x, y, w, h = coordinates
     cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-    return cv2.putText(img, text, (x + w, y - 20), 0, 1, color)
+    cv2.rectangle(img, (x, y), (x + w, y - 25), color, -1)
+    return cv2.putText(img, text, (x + w, y - 10), 0, 0.5, (255, 255, 255))
 
 
 def transform(x, seed=0):
