@@ -4,14 +4,16 @@ import requests
 import urllib.request
 import cv2
 import numpy as np
-import base64
+
+import json
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"
 }
+SAVE_DIR = "./dataset"
 
 def get_url(query):
-    return "https://www.google.co.in/search?q=" + query + "&source=lnms&tbm=isch"
+    return "http://www.bing.com/images/search?q=" + query + "&FORM=HDRSC2"
 
 
 def get_soup(query):
@@ -22,9 +24,12 @@ def get_soup(query):
 
 def save_image(url, save_path):
     print("downloading ", url)
-    req = urllib.request.urlopen(url)
-    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-    img = cv2.imdecode(arr, -1)
+    try:
+        req = urllib.request.urlopen(url)
+        arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
+        img = cv2.imdecode(arr, -1)
+    except:
+        img = None
 
     if img is not None:
         cv2.imwrite(save_path, img)
@@ -33,26 +38,26 @@ def save_image(url, save_path):
     return False
 
 
-def download_images(query, size):
+def download_images(query):
     print("Download images with query: {}".format(query))
-    output_directory = "./dataset"
+
     image_directory = query.replace(" ", "_")
-    save_path = os.path.join(output_directory, image_directory)
+    save_path = os.path.join(SAVE_DIR, image_directory)
+
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
 
     # using face for better query result
-    soup = get_soup(query + " face")
-    itags = soup.findAll('img')
+    soup = get_soup(query)
+    image_tags = soup.findAll("a",{"class":"iusc"})
     count = 0
-    for i, itag in enumerate(itags):
-        img_url = itag.get('data-src')
-        if img_url:
-            # data_type, url = img_url.split("base64,")
-            # print(img_url)
-            # img_url = data_type + "base64," + base64.b64decode(url)
+    for i, itag in enumerate(image_tags):
+        m = json.loads(itag["m"])
+        # mobile image
+        murl = m["murl"]
+        if murl:
             img_save_path = os.path.join(save_path, '{}.png'.format(i))
-            if save_image(img_url, img_save_path):
+            if save_image(murl, img_save_path):
                 count+=1
 
     print("Done, downloaded: {}".format(count))
@@ -73,7 +78,7 @@ if __name__ == "__main__":
         "le cong vinh",
         "thao tam",
         "dong nhi",
-        "singer min",
+        "ca si min",
         "den vau",
         "madong seok",
         "kim da mi",
@@ -82,6 +87,5 @@ if __name__ == "__main__":
         "minh nghi",
     ]
 
-    size = 20
     for name in names:
-        download_images(name, size)
+        download_images(name)

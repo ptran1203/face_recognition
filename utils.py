@@ -1,9 +1,9 @@
 import pickle
 import numpy as np
 import urllib.request
-import keras.preprocessing.image as image_processing
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import keras.preprocessing.image as image_processing
 import cv2
 import face_localization
 import seaborn as sns
@@ -73,7 +73,7 @@ def readimg(path, get_face=True,
             normalize=True, preprcs=True,
             size=64):
     """
-    returns image, bbox, face
+    @returns: image, bbox, face
     """
     bbox = None
     face = None
