@@ -17,6 +17,7 @@ class DataGenerator:
         img_resolution=128,
         split_option=1,
         test_size=0.3,
+        kshot=5,
     ):
 
         SPLIT_BY_LABEL = 1
@@ -44,7 +45,7 @@ class DataGenerator:
             self.x_support,
             self.labels_test,
             self.labels_support,
-        ) = train_test_split(self.x_test, self.labels_test, test_size=0.1)
+        ) = self.support_split(self.x_test, self.labels_test, kshot=kshot)
 
         # convert string label to numberical label
         _, self.y = np.unique(self.labels, return_inverse=True)
@@ -53,7 +54,7 @@ class DataGenerator:
 
         self.classes = np.unique(self.y)
         self.per_class_ids = {}
-        ids = np.array(range(len(self.x)))
+        ids = np.arange(len(self.x))
         for c in self.classes:
             self.per_class_ids[c] = ids[self.y == c]
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
@@ -67,6 +68,19 @@ class DataGenerator:
 
         return x[indices], y[indices]
 
+    @staticmethod
+    def support_split(x, y, kshot=5):
+        """
+        Randomly picks <kshot> images from each class
+        """
+        classes = np.unique(y)
+        ids = np.arange(len(x))
+        per_class_ids = [ids[y == c] for c in classes]
+        selected = np.concatenate([x[:kshot] for x in per_class_ids])
+        remains = np.setdiff1d(ids, selected)
+
+        return x[remains], x[selected], y[remains], y[selected]
+
     def get_data_for_class(self, classid):
         return self.x[self.per_class_ids[classid]]
 
@@ -78,11 +92,13 @@ class DataGenerator:
             self.x, self.labels = utils.pickle_load(data_path)
         else:
             print("Read data from directory")
+            count = 0
             labels = []
             imgs = []
             for sub_dir in os.listdir(data_path):
                 dir_ = os.path.join(data_path, sub_dir)
                 for fname in os.listdir(dir_):
+                    count += 1
                     # Get the face image
                     _, _, img = utils.readimg(
                         os.path.join(dir_, fname),
@@ -95,7 +111,7 @@ class DataGenerator:
                         imgs.append(img)
                         labels.append(sub_dir)
 
-            print("Done, {} images were loaded".format(len(imgs)))
+            print("Done, {}/{} images were loaded".format(len(imgs), count))
             self.x = np.array(imgs)
             self.labels = np.array(labels)
 

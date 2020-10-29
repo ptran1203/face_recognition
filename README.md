@@ -16,7 +16,7 @@ Since the images downloaded from bing search is not suitable for training, to tr
 
 #### 1.2.2 Train test split
 
-05 of 18 identities are randomly selected to evaluate the model performance (unseen data). the remains are training data.
+05 of 18 identities are randomly selected to evaluate the model performance (unseen data) and the remains are training data. So the training and testing examples are disjoint
 
 ## Model
 ### 1. Using pre-trained FaceNet (WIP)
@@ -28,7 +28,7 @@ Since the images downloaded from bing search is not suitable for training, to tr
 #### Result
 
 - The model archive accuracy of `62.75%` on test data
-- Visualization of learned face embedding plotted with T-SNE
+- T-SNE visualization of learned face embedding on test data
 
 ![face_representation](./images/scatter_feat.png)
 
