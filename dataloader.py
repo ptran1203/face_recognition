@@ -5,11 +5,19 @@ from collections import Counter
 import os
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
+
 sns.set_theme()
 
+
 class DataGenerator:
-    def __init__(self, data_path, batch_size=64, img_resolution=128,
-                split_option=1, test_size=0.3):
+    def __init__(
+        self,
+        data_path,
+        batch_size=64,
+        img_resolution=128,
+        split_option=1,
+        test_size=0.3,
+    ):
 
         SPLIT_BY_LABEL = 1
         NORMAL_SPLIT = 2
@@ -24,14 +32,19 @@ class DataGenerator:
         self.x, self.labels = self.filter_one_image(self.x, self.labels)
 
         self.x = utils.norm(self.x)
-        
-        self.x, self.x_test, self.labels, self.labels_test = \
-                utils.split_by_label(self.x, self.labels, test_size=test_size) if split_option == SPLIT_BY_LABEL \
-                else train_test_split(self.x, self.labels, test_size=test_size)
 
-        self.x_test, self.x_support, self.labels_test, self.labels_support = \
-                train_test_split(self.x_test, self.labels_test, test_size=0.1)
+        self.x, self.x_test, self.labels, self.labels_test = (
+            utils.split_by_label(self.x, self.labels, test_size=test_size)
+            if split_option == SPLIT_BY_LABEL
+            else train_test_split(self.x, self.labels, test_size=test_size)
+        )
 
+        (
+            self.x_test,
+            self.x_support,
+            self.labels_test,
+            self.labels_support,
+        ) = train_test_split(self.x_test, self.labels_test, test_size=0.1)
 
         # convert string label to numberical label
         _, self.y = np.unique(self.labels, return_inverse=True)
@@ -45,22 +58,18 @@ class DataGenerator:
             self.per_class_ids[c] = ids[self.y == c]
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
 
-
-
     @staticmethod
     def filter_one_image(x, y):
         # filter identities have more than 1 image
         counter = Counter(y)
-        filtered = ([c for c in counter if counter[c] > 1])
+        filtered = [c for c in counter if counter[c] > 1]
         indices = np.where(np.in1d(y, filtered))
 
         return x[indices], y[indices]
 
-
     def get_data_for_class(self, classid):
         return self.x[self.per_class_ids[classid]]
 
-    
     def loaddata(self, data_path):
         temp_file_name = "./temp_data.pkl"
         if os.path.isfile(temp_file_name):
@@ -75,11 +84,13 @@ class DataGenerator:
                 dir_ = os.path.join(data_path, sub_dir)
                 for fname in os.listdir(dir_):
                     # Get the face image
-                    _, _, img = utils.readimg(os.path.join(dir_, fname),
-                                          get_face=True,
-                                          normalize=False,
-                                          preprcs=False,
-                                          size=self.img_resolution)
+                    _, _, img = utils.readimg(
+                        os.path.join(dir_, fname),
+                        get_face=True,
+                        normalize=False,
+                        preprcs=False,
+                        size=self.img_resolution,
+                    )
                     if img is not None:
                         imgs.append(img)
                         labels.append(sub_dir)
@@ -89,7 +100,6 @@ class DataGenerator:
             self.labels = np.array(labels)
 
             utils.pickle_save((self.x, self.labels), temp_file_name)
-
 
     def get_samples_for_class(self, c, samples=None):
         if samples is None:
@@ -104,13 +114,11 @@ class DataGenerator:
             to_return = random[:samples]
             return self.dataset_x[to_return]
 
-
     def augment_one(self, x, y):
         seed = np.random.randint(0, 100)
         new_x = utils.transform(x, seed)
         new_y = utils.transform(y, seed)
         return new_x, new_y
-
 
     def augment_array(self, x, y, augment_factor):
         imgs = []
@@ -125,7 +133,6 @@ class DataGenerator:
 
         return np.array(imgs), np.array(labels)
 
-
     def next_batch(self):
         dataset_x = self.x
         labels = self.y
@@ -134,8 +141,10 @@ class DataGenerator:
         indices = np.arange(dataset_x.shape[0])
         np.random.shuffle(indices)
 
-        for start_idx in range(0, dataset_x.shape[0] - self.batch_size + 1, self.batch_size):
-            access_pattern = indices[start_idx:start_idx + self.batch_size]
+        for start_idx in range(
+            0, dataset_x.shape[0] - self.batch_size + 1, self.batch_size
+        ):
+            access_pattern = indices[start_idx : start_idx + self.batch_size]
             batch_y = [onehot_labels[access_pattern], self.dummy]
             yield (
                 [dataset_x[access_pattern, :, :, :], labels[access_pattern]],

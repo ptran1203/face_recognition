@@ -3,18 +3,20 @@
 
 Keras/Tensorflow implementation of face recognition model using [triplet loss](https://arxiv.org/abs/1503.03832)
 
-## Dataset
-The [dataset](/dataset) is collected manually from google image search, we have automated with python script [download_data.py](./download_data.py)
+## 1. Dataset
+### 1.1 Summary
+The [dataset](/dataset) including 18 identities (17 and my photo) collected automatically from bing image search, check [download_data.py](./download_data.py) for more details.
 
-We collected 10 identities with data distribution as follow
+![data_distribution](./images/data_dist.png)
 
-<Data distribution image>
+### 1.2 Data preparation
+#### 1.2.1 Face extraction
 
-### Data preparation
+Since the images downloaded from bing search is not suitable for training, to train the face recognition, we have to drop the face of each image in the dataset, to accomplish this, [face_recognition](https://pypi.org/project/face-recognition/) module is used to detect face bounding boxes, then we can drop the face to train the face recognizer. However, the module can't detect the face in some images or detect wrong face (we search for Brad Pitt but sometimes we got his wife's face).
 
-Since the image downloaded from google search may not be usable, to train the face recognition, we have to drop the face of each image in the dataset, to accomplish this, [face_recognition](https://pypi.org/project/face-recognition/) module is used to detect face bounding boxes, then we can drop the face to train the face recognizer. There are some images that could not detect the face.
+#### 1.2.2 Train test split
 
-<Origin data and droped data>
+05 of 18 identities are randomly selected to evaluate the model performance (unseen data). the remains are training data.
 
 ## Model
 ### 1. Using pre-trained FaceNet (WIP)
@@ -25,7 +27,7 @@ Since the image downloaded from google search may not be usable, to train the fa
 
 #### Result
 
-- The model archive accuracy of `77.78%` on test data
+- The model archive accuracy of `62.75%` on test data
 - Visualization of learned face embedding plotted with T-SNE
 
 ![face_representation](./images/scatter_feat.png)

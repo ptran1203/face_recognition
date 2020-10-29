@@ -12,14 +12,15 @@ HEADERS = {
 }
 SAVE_DIR = "./dataset"
 
+
 def get_url(query):
     return "http://www.bing.com/images/search?q=" + query + "&FORM=HDRSC2"
 
 
 def get_soup(query):
-    r =  requests.get(get_url(query), headers=HEADERS)
-    r.encoding = 'utf-8'
-    return BeautifulSoup(r.text, 'html.parser')
+    r = requests.get(get_url(query), headers=HEADERS)
+    r.encoding = "utf-8"
+    return BeautifulSoup(r.text, "html.parser")
 
 
 def save_image(url, save_path):
@@ -49,16 +50,16 @@ def download_images(query):
 
     # using face for better query result
     soup = get_soup(query)
-    image_tags = soup.findAll("a",{"class":"iusc"})
+    image_tags = soup.findAll("a", {"class": "iusc"})
     count = 0
     for i, itag in enumerate(image_tags):
         m = json.loads(itag["m"])
         # mobile image
         murl = m["murl"]
         if murl:
-            img_save_path = os.path.join(save_path, '{}.png'.format(i))
+            img_save_path = os.path.join(save_path, "{}.png".format(i))
             if save_image(murl, img_save_path):
-                count+=1
+                count += 1
 
     print("Done, downloaded: {}".format(count))
 
@@ -71,7 +72,6 @@ if __name__ == "__main__":
         "brad pitt",
         "barack obama",
         "donald trump",
-
         # Asian
         "chipu",
         "son tung mtp",
