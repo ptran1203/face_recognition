@@ -91,6 +91,11 @@ class FaceModel:
         self.support_labels = y
 
     def evaluate(self, x_test, y_test):
+        """
+        Evaluate model perfomance by accracy metric
+
+        @returns: accuracy, pred_wrong_indices
+        """
         if not hasattr(self, "embeddings"):
             raise ("embeddings is not calculated")
 
@@ -99,8 +104,10 @@ class FaceModel:
             pred, _ = self.get_prediction(np.expand_dims(x, 0), self.support_labels)
             preds.append(pred)
 
-        preds = np.array([preds])
-        return (preds == y_test).mean()
+        preds = np.array(preds)
+        pred_boolean = preds == y_test
+        pred_wrong = np.where(pred_boolean == False)[0]
+        return pred_boolean.mean(), pred_wrong
 
 
 class AutoEncoder:

@@ -2,6 +2,7 @@
 # Face recognition using triplet loss
 
 Keras/Tensorflow implementation of face recognition model using [triplet loss](https://arxiv.org/abs/1503.03832)
+Quickstart in [Colab](./face_recognition.ipynb)
 
 ## 1. Dataset
 ### 1.1 Summary
