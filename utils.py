@@ -82,6 +82,7 @@ def readimg(path, get_face=True, normalize=True, preprcs=True, size=64):
     """
     bbox = None
     face = None
+    default = None, None, None
     try:
         if path.startswith("http") or path.startswith("base"):
             img = get_image_http(path)
@@ -89,12 +90,15 @@ def readimg(path, get_face=True, normalize=True, preprcs=True, size=64):
             img = cv2.imread(path)
     except Exception as e:
         print("Could not read img, ERROR: {}".format(str(e)))
-        return None, None, None
+        return default
+
+    if img is None:
+        return default
 
     if get_face:
         face = face_localization.extract_face(img, True)
         if face is None:
-            return None, None, None
+            return default
 
         face, bbox = face
         face = _processing(face, normalize, preprcs)
