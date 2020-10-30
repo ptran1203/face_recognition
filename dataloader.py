@@ -118,6 +118,7 @@ class DataGenerator:
                         imgs.append(img)
                         labels.append(sub_dir)
                     print("{}, ".format(icount), end="")
+                print("")
                 count += icount
 
             print("Done, {}/{} images were loaded".format(len(imgs), count))
