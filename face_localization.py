@@ -40,12 +40,13 @@ def extract_multi_faces(image):
 
     faces = []
     bboxs = []
-    for location in locations:
-        (start_y, start_x, end_y, end_x) = location
-        face = _get_face(image, start_y, start_x, end_y, end_x)
-        if face is not None:
-            faces.append(face)
-            bboxs.append((start_x, start_y, end_x - start_x, end_y - start_y))
+    if locations is not None and len(locations):
+        for location in locations:
+            (start_y, start_x, end_y, end_x) = location
+            face = _get_face(image, start_y, start_x, end_y, end_x)
+            if face is not None:
+                faces.append(face)
+                bboxs.append((start_x, start_y, end_x - start_x, end_y - start_y))
 
     return faces, bboxs
 

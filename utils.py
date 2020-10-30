@@ -255,3 +255,20 @@ def split_by_label(x, y, test_size=0.3):
 
     return (x[to_train_idx], x[to_test_idx], y[to_train_idx], y[to_test_idx])
 
+
+def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+    if width is None and height is None:
+        return image
+
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    resized = cv2.resize(image, dim, interpolation=inter)
+    return resized
