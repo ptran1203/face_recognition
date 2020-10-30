@@ -99,6 +99,8 @@ class DataGenerator:
             imgs = []
             for sub_dir in os.listdir(data_path):
                 dir_ = os.path.join(data_path, sub_dir)
+                if not os.path.isdir(dir_):
+                    continue
                 fnames = os.listdir(dir_)
                 print("-> {} total: {}: ".format(sub_dir, len(fnames), end=""))
                 icount = 0
