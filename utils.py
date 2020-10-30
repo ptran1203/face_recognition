@@ -125,7 +125,7 @@ def transform(x, seed=0):
     return img
 
 
-def show_images(img_array, denorm=True, deprcs=True):
+def show_images(img_array, denorm=True, deprcs=False):
     try:
         shape = img_array.shape
         img_array = img_array.reshape((-1, shape[-4], shape[-3], shape[-2], shape[-1]))
