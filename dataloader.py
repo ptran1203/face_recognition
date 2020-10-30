@@ -34,18 +34,18 @@ class DataGenerator:
 
         self.x = utils.norm(self.x)
 
+        (
+            self.x,
+            self.x_support,
+            self.labels,
+            self.labels_support,
+        ) = self.support_split(self.x, self.labels, kshot=kshot)
+
         self.x, self.x_test, self.labels, self.labels_test = (
             utils.split_by_label(self.x, self.labels, test_size=test_size)
             if split_option == SPLIT_BY_LABEL
             else train_test_split(self.x, self.labels, test_size=test_size)
         )
-
-        (
-            self.x_test,
-            self.x_support,
-            self.labels_test,
-            self.labels_support,
-        ) = self.support_split(self.x_test, self.labels_test, kshot=kshot)
 
         # convert string label to numberical label
         _, self.y = np.unique(self.labels, return_inverse=True)
