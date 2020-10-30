@@ -30,7 +30,8 @@ def save_image(url, save_path):
         req = urllib.request.urlopen(url)
         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
         img = cv2.imdecode(arr, -1)
-    except:
+    except Exception as e:
+        print("Could not get image from {}, ERROR: {}".format(url, str(e)))
         img = None
 
     if img is not None:
@@ -66,7 +67,7 @@ def download_images(query):
         # mobile image
         murl = m["murl"]
         if murl:
-            img_save_path = os.path.join(save_path, "{}.png".format(i))
+            img_save_path = os.path.join(save_path, "{}_{}.png".format(image_directory,i))
             if save_image(murl, img_save_path):
                 count += 1
 
@@ -94,79 +95,15 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 def download_images_in_list(names):
     for name in names:
         if not os.path.isdir(os.path.join(SAVE_DIR, name.replace(" ", "_"))):
-            download_images(name)
+            name and download_images(name)
         else:
             print("Data already exist")
 
 
 if __name__ == "__main__":
     # Download data from google image search by keyword
-    names = [
-        #
-        "emma watson",
-        "christoph waltz",
-        "brad pitt",
-        "barack obama",
-        "donald trump",
-        "tom hanks",
-        "leonardo dicaprio",
-        "robert downey jr",
-        "will smith",
-        "johnny depp",
-        "tom cruise",
-        "matt damon",
-        "samuel jackson",
-        "vin diesel",
-        "hugh jackman",
-        "harrison ford",
-        "christian bale",
-        "ryan gosling",
-        "liam neeson",
-        "scarlett johansson",
-        "charlize theron",
-        "margot robbie",
-        "jennifer lawrence",
-        "emma stone",
-        "megan fox",
-        "anne hathaway",
-        "emily blunt",
-        # Asian
-        "song hye kyo",
-        "park shin hye",
-        "bae suzy",
-        "ha ji won",
-        "kim tae hae",
-        "park min young",
-        "choi ji woo",
-        "son ye jin",
-        "park bo young",
-        "shin min a",
-        "kim yoo jung",
-        "lee min ho",
-        "hyun bin",
-        "kim soo hyun",
-        "song joong ki",
-        "ji chang wook",
-        "so ji sub",
-        "lee jong suk",
-        "park seo joon",
-        "gong yoo",
-        "park bo gum",
-        "lee dong wook",
-        # Vietnam
-        "nha phuong",
-        "tang thanh ha",
-        "tran thanh",
-        "hoai linh",
-        "ninh duong lan ngoc",
-        "misthy",
-        "son tung mtp",
-        "hoang yen chibi",
-        "dam vinh hung",
-        "thuy tien",
-        "khoi my",
-        "dong nhi",
-    ]
+    with open("identity_list.txt", "r") as f:
+        names = f.read().split("\n")
 
     list_size = len(names)
     haft = list_size // 2

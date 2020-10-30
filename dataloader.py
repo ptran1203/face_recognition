@@ -18,6 +18,7 @@ class DataGenerator:
         split_option=1,
         test_size=0.3,
         kshot=5,
+        force_reload_data=False,
     ):
 
         SPLIT_BY_LABEL = 1
@@ -25,6 +26,7 @@ class DataGenerator:
 
         self.img_resolution = img_resolution
         self.batch_size = batch_size
+        self.force_reload_data = force_reload_data
         self.loaddata(data_path)
 
         self.init_labels = np.copy(self.labels)
@@ -86,7 +88,7 @@ class DataGenerator:
 
     def loaddata(self, data_path):
         temp_file_name = "./temp_data.pkl"
-        if os.path.isfile(temp_file_name):
+        if not self.force_reload_data and os.path.isfile(temp_file_name):
             self.x, self.labels = utils.pickle_load(temp_file_name)
         elif data_path.endswith(".pkl"):
             self.x, self.labels = utils.pickle_load(data_path)
@@ -97,8 +99,11 @@ class DataGenerator:
             imgs = []
             for sub_dir in os.listdir(data_path):
                 dir_ = os.path.join(data_path, sub_dir)
-                for fname in os.listdir(dir_):
-                    count += 1
+                fnames = os.listdir(dir_)
+                print("-> {} total: {}: ".format(sub_dir, len(fnames), end=""))
+                icount = 0
+                for fname in fnames:
+                    icount += 1
                     # Get the face image
                     _, _, img = utils.readimg(
                         os.path.join(dir_, fname),
@@ -110,6 +115,8 @@ class DataGenerator:
                     if img is not None:
                         imgs.append(img)
                         labels.append(sub_dir)
+                    print("{}, ".format(icount), end="")
+                count += icount
 
             print("Done, {}/{} images were loaded".format(len(imgs), count))
             self.x = np.array(imgs)
