@@ -57,7 +57,7 @@ class DataGenerator:
         self.classes = np.unique(self.y)
         self.per_class_ids = {}
         ids = np.arange(len(self.x))
-        for c in self.classes:
+        for c in self.classes[:3]:
             self.per_class_ids[c] = ids[self.y == c]
             utils.show_images(self.x[self.per_class_ids[c]][:10], True, False)
 
