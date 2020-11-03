@@ -50,13 +50,17 @@ def scale(img):
 
 
 def download_images(query):
-    print("Download images with query: {}".format(query))
+    if not query:
+        return
 
     image_directory = query.replace(" ", "_")
     save_path = os.path.join(SAVE_DIR, image_directory)
 
-    if not os.path.isdir(save_path):
-        os.mkdir(save_path)
+    if os.path.isdir(save_path):
+        return
+
+    print("Download images with query: {}".format(query))
+    os.mkdir(save_path)
 
     # using face for better query result
     soup = get_soup(query)
@@ -67,7 +71,9 @@ def download_images(query):
         # mobile image
         murl = m["murl"]
         if murl:
-            img_save_path = os.path.join(save_path, "{}_{}.png".format(image_directory,i))
+            img_save_path = os.path.join(
+                save_path, "{}_{}.png".format(image_directory, i)
+            )
             if save_image(murl, img_save_path):
                 count += 1
 
@@ -94,10 +100,7 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 def download_images_in_list(names):
     for name in names:
-        if not os.path.isdir(os.path.join(SAVE_DIR, name.replace(" ", "_"))):
-            name and download_images(name)
-        else:
-            print("Data already exist")
+        download_images(name)
 
 
 if __name__ == "__main__":
@@ -106,17 +109,16 @@ if __name__ == "__main__":
         names = f.read().split("\n")
 
     list_size = len(names)
-    haft = list_size // 2
-
-    part1 = names[:haft]
-    part2 = names[haft:]
-
-    t1 = threading.Thread(target=download_images_in_list, args=(part1,), kwargs={})
-    t2 = threading.Thread(target=download_images_in_list, args=(part2,), kwargs={})
 
     print("Total identities: {}".format(list_size))
 
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+    import multiprocessing as mp
+
+    cpus = 2
+    pool = mp.Pool(cpus)
+
+    r = [pool.apply_async(download_images, args=(name,)) for name in names]
+
+    pool.close()
+    pool.join()
+
